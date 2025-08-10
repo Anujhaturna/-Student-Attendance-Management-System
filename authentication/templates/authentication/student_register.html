@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+       /* ✅ Reset Default Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* ✅ Body Styling */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4b79a1, #283e51); /* Subtle light blue gradient */
+    padding: 20px;
+}
+
+/* ✅ Main Container */
+.container {
+    display: flex;
+    width: 80%;
+    max-width: 900px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+}
+
+/* ✅ Left Section */
+.left-section {
+    width: 40%;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    text-align: center;
+}
+
+.left-section h2 {
+    font-size: 26px;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.left-section p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* ✅ Right Section */
+.right-section {
+    width: 60%;
+    padding: 30px;
+    background: #ffffff;
+}
+
+/* ✅ Form Fields */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+/* ✅ Focus Effect on Inputs */
+input:focus, textarea:focus {
+    border-color: #4b79a1;
+    outline: none;
+    box-shadow: 0 0 5px rgba(75, 121, 161, 0.5);
+}
+
+/* ✅ Buttons */
+.btn-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+button {
+    width: 48%;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+/* ✅ Register Button */
+.register-btn {
+    background: #3498db;
+    color: white;
+}
+
+.register-btn:hover {
+    background: #2980b9;
+}
+
+/* ✅ Home Button */
+.home-btn {
+    background: #7f8c8d;
+    color: white;
+}
+
+.home-btn:hover {
+    background: #5d6d7e;
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        width: 95%;
+    }
+
+    .left-section, .right-section {
+        width: 100%;
+    }
+
+    .left-section {
+        padding: 20px;
+    }
+
+    .btn-container {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left-section">
+        <h2>Student Registration</h2>
+        <p>Register now to access our student portal.</p>
+    </div>
+
+    <div class="right-section">
+        <form method="post">
+            {% csrf_token %}
+
+            <input type="hidden" name="user_type" value="student">
+
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password1">Password:</label>
+                <input type="password" name="password1" id="password1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password2">Confirm Password:</label>
+                <input type="password" name="password2" id="password2" required>
+            </div>
+
+            <div class="form-group">
+                <label for="full_name">Full Name:</label>
+                <input type="text" name="full_name" id="full_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="roll_number">Roll Number:</label>
+                <input type="text" name="roll_number" id="roll_number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="class_name">Class:</label>
+                <input type="text" name="class_name" id="class_name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="section">Section:</label>
+                <input type="text" name="section" id="section" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date_of_birth">Date of Birth:</label>
+                <input type="date" name="date_of_birth" id="date_of_birth" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone_number">Phone Number:</label>
+                <input type="text" name="phone_number" id="phone_number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <textarea name="address" id="address" required></textarea>
+            </div>
+
+            <div class="btn-container">
+                <button type="submit" class="register-btn">Register</button>
+                <button type="button" class="home-btn" onclick="goHome()">Back to Home</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function goHome() {
+        window.location.href = "{% url 'home' %}";  // Update with your actual home page URL
+    }
+</script>
+
+</body>
+</html>

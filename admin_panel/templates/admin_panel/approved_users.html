@@ -1,0 +1,111 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>Approved Users</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in approved_users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.get_user_type_display }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="no-data">No approved users found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* General Styling */
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+    }
+
+    .container {
+        width: 80%;
+        margin: 30px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    /* Table Styling */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        background: white;
+    }
+
+    thead {
+        background: #007bff;
+        color: white;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        font-weight: bold;
+    }
+
+    tbody tr:hover {
+        background: #f1f1f1;
+    }
+
+    /* No Data Styling */
+    .no-data {
+        text-align: center;
+        font-style: italic;
+        color: #777;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            width: 95%;
+        }
+
+        table {
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 10px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,300 @@
+{% extends 'base_teacher.html' %}
+
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            margin-left: 180px;
+            padding: 20px;
+            width: calc(100% - 270px);
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        /* Selection Bar */
+        .selection-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .selection-container label {
+            font-weight: bold;
+        }
+
+        .selection-container select,
+        .selection-container input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        /* Attendance Buttons */
+        .attendance-btn {
+            padding: 8px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+            margin: 0 5px;
+        }
+
+        .present {
+            background-color: green;
+            color: white;
+        }
+
+        .absent {
+            background-color: red;
+            color: white;
+        }
+
+        .selected {
+            opacity: 0.6;
+        }
+
+        /* Hide the radio buttons */
+        input[type="radio"] {
+            display: none;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Mark Attendance</h2>
+
+        <!-- Selection Bar -->
+        <div class="selection-container">
+            <label for="class_name">Class:</label>
+            <select id="class_name" name="class_name" required>
+                <option value="">-- Select --</option>
+                {% for class in class_choices %}
+                    <option value="{{ class }}">{{ class }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="section">Section:</label>
+            <select id="section" name="section" required>
+                <option value="">-- Select --</option>
+                {% for section in section_choices %}
+                    <option value="{{ section }}">{{ section }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="subject">Subject:</label>
+            <select id="subject" name="subject" required>
+                <option value="">-- Select --</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject }}">{{ subject }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="attendance_date" required>
+        </div>
+
+        <form id="attendance_form" method="post">
+            {% csrf_token %}
+
+            <h4>Students List</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Roll No.</th>
+                        <th>Attendance</th>
+                    </tr>
+                </thead>
+                <tbody id="student_table_body">
+                    <tr><td colspan="3">Select class and section to load students</td></tr>
+                </tbody>
+            </table>
+
+            <button type="submit">Submit Attendance</button>
+        </form>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+    // Fetch students when class or section changes
+    $("#class_name, #section").change(fetchStudents);
+
+    function fetchStudents() {
+        let className = $("#class_name").val();
+        let section = $("#section").val();
+
+        if (className && section) {
+            $.ajax({
+                url: "/teacher/get-students/",
+                type: "GET",
+                data: { class_name: className, section: section },
+                dataType: "json",
+                success: function (data) {
+                    let studentTableBody = $("#student_table_body");
+                    studentTableBody.empty();
+
+                    if (data.students && data.students.length > 0) {
+                        data.students.forEach(student => {
+                            studentTableBody.append(`
+                                <tr>
+                                    <td>${student.full_name}</td>
+                                    <td>${student.roll_number}</td>
+                                    <td>
+                                        <button type="button" class="attendance-btn present" data-student="${student.id}" data-status="present">Present</button>
+                                        <button type="button" class="attendance-btn absent" data-student="${student.id}" data-status="absent">Absent</button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    } else {
+                        studentTableBody.html("<tr><td colspan='3'>No students found</td></tr>");
+                    }
+                },
+                error: function (xhr) {
+                    console.error("Fetch error:", xhr.responseText);
+                    alert("Error fetching students.");
+                }
+            });
+        }
+    }
+
+    // Handle button click to select attendance
+    $(document).on("click", ".attendance-btn", function () {
+        let studentId = $(this).data("student");
+        let status = $(this).data("status");
+
+        // Remove selection from both buttons for the student
+        $(`button[data-student="${studentId}"]`).removeClass("selected");
+
+        // Add selected class to the clicked button
+        $(this).addClass("selected");
+
+        // Store attendance data in the button itself
+        $(this).closest("tr").attr("data-attendance", JSON.stringify({ student_id: studentId, status: status }));
+    });
+
+    // Ensure form submission works correctly
+    $("#attendance_form").submit(function (event) {
+        event.preventDefault();
+
+        let className = $("#class_name").val();
+        let section = $("#section").val();
+        let subject = $("#subject").val();
+        let attendanceDate = $("#date").val();
+
+        // Validate required fields
+        if (!className || !section || !subject || !attendanceDate) {
+            alert("Class, Section, Subject, and Date are required.");
+            return;
+        }
+
+        let attendanceData = [];
+        $("tbody tr").each(function () {
+            let attendance = $(this).attr("data-attendance");
+            if (attendance) {
+                attendanceData.push(JSON.parse(attendance));
+            }
+        });
+
+        if (attendanceData.length === 0) {
+            alert("Please mark attendance for at least one student.");
+            return;
+        }
+
+        $.ajax({
+            url: "/teacher/submit_attendance/",
+            type: "POST",
+            contentType: "application/json",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },  // Ensure CSRF token is included
+            data: JSON.stringify({
+                class_name: className,
+                section: section,
+                subject: subject,
+                attendance_date: attendanceDate,
+                attendance: attendanceData
+            }),
+            success: function (response) {
+                alert(response.message);
+                location.reload();  // Refresh page after successful submission
+            },
+            error: function (xhr) {
+                console.error("Submission error:", xhr.responseText);
+                alert("Error submitting attendance.");
+            }
+        });
+    });
+});
+
+    </script>
+
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow p-4">
+        <h2 class="text-center mb-4">Edit Student Details</h2>
+
+        <form method="POST" class="mb-3">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label><strong>Full Name:</strong></label>
+                <input type="text" name="full_name" value="{{ student.full_name }}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Phone Number:</strong></label>
+                <input type="text" name="phone_number" value="{{ student.phone_number }}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label><strong>Address:</strong></label>
+                <input type="text" name="address" value="{{ student.address }}" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block mt-3"><i class="fas fa-save"></i> Save Changes</button>
+        </form>
+    </div>
+
+    <div class="card shadow p-4 mt-4">
+        <h3 class="text-center mb-3">Add Remark</h3>
+
+        <form method="POST" action="{% url 'authentication:admin_add_remark' student.id %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <textarea name="remark" rows="3" class="form-control" placeholder="Enter remark..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-comment"></i> Add Remark</button>
+        </form>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'authentication:admin_student_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to List</a>
+    </div>
+</div>
+
+{% endblock %}

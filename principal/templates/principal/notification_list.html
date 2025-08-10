@@ -1,0 +1,73 @@
+{% extends 'base_p.html' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+    <style>
+        /* Notification List Styling */
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .notification-list li {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 2px solid #ff8800; /* Orange border */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            opacity: 0;
+            animation: slideUp 0.5s forwards;
+        }
+
+        .notification-list li:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 12px rgba(255, 136, 0, 0.3);
+        }
+
+        .notification-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ff8800;
+        }
+
+        .notification-message {
+            margin-top: 5px;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .notification-meta {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+
+    <h2 style="text-align: center; color: #ff8800;">Notifications</h2>
+    <ul class="notification-list">
+        {% for notification in notifications %}
+            <li>
+                <span class="notification-title">{{ notification.title }}</span>
+                <p class="notification-message">{{ notification.message }}</p>
+                <small class="notification-meta">
+                    Sent to: {{ notification.recipient.full_name }} | {{ notification.created_at }}
+                </small>
+            </li>
+        {% empty %}
+            <li>
+                <p>No notifications found.</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base_p.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <style>
+        /* Student Profile Styling */
+        .content {
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #007BFF;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #007BFF;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .profile-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .profile-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-info p {
+            font-size: 18px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #007BFF;
+            transition: all 0.3s;
+        }
+
+        .profile-info p:hover {
+            background: #e9ecef;
+            border-left: 5px solid #0056b3;
+        }
+
+        strong {
+            color: #333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+                max-width: 90%;
+            }
+
+            .profile-card {
+                padding: 15px;
+            }
+
+            .profile-info p {
+                font-size: 16px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <h2 class="profile-title">Student Profile</h2>
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-info">
+                    <p><strong>Full Name:</strong> {{ student.full_name }}</p>
+                    <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+                    <p><strong>Class:</strong> {{ student.class_name }}</p>
+                    <p><strong>Section:</strong> {{ student.section }}</p>
+                    <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+                    <p><strong>Phone Number:</strong> {{ student.phone_number }}</p>
+                    <p><strong>Address:</strong> {{ student.address }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+{% endblock %}

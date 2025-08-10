@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Student Dashboard</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #eef2f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: orange;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 20px;
+            transition: 0.3s;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-size: 16px;
+            border: 2px solid white;
+            background: black;
+            text-align: center;
+            margin: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover {
+            background: #004494;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 20px;
+            width: 80%;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            background: black;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3 {
+            color: black;
+            text-align: center;
+        }
+
+        p {
+            font-size: 15px;
+            color: blue;
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .profile {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-toggle {
+            background: black;
+            color: white;
+            border: 2px solid white;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            display: block;
+            margin: 10px auto;
+            text-align: center;
+        }
+
+        .btn-toggle:hover {
+            background: white;
+            color: black;
+        }
+
+        /* Form Styling */
+        .form-container {
+            display: none;
+            padding: 15px;
+            background: #f1f1f1;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button[type="submit"] {
+            background: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background: #218838;
+        }
+
+        /* Preloader */
+        #preloader {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+        }
+
+        .dots-container {
+            display: flex;
+            justify-content: space-between;
+            width: 60px;
+        }
+
+        .dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #4361ee;
+            opacity: 0;
+            animation: blink 1.5s infinite ease-in-out;
+        }
+
+        .dot:nth-child(1) { animation-delay: 0s; }
+        .dot:nth-child(2) { animation-delay: 0.3s; }
+        .dot:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #preloader.hidden {
+            display: none;
+        }
+
+        .container.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="dots-container">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Student Panel</h2>
+        <a href="#">Dashboard</a>
+        <a href="{% url 'announcement_list' %}">View Announcements</a>
+        <a href="{% url 'view_attendance' %}">View Attendance List</a>
+        <a href="{% url 'user_logout' %}" class="logout">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            {% if student %}
+                <div class="profile">
+                    <h3>Welcome, {{ student.full_name }}!</h3>
+                    <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+                    <p><strong>Class:</strong> {{ student.class_name }} - Section {{ student.section }}</p>
+                    <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+                    <p><strong>Phone:</strong> {{ student.phone_number }}</p>
+                    <p><strong>Address:</strong> {{ student.address }}</p>
+                </div>
+
+                <button class="btn-toggle" onclick="toggleForm('edit-profile')">Edit Profile</button>
+                <div id="edit-profile" class="form-container">
+                    <h3>Edit Profile</h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <label>Full Name:</label>
+                        <input type="text" name="full_name" value="{{ student.full_name }}" required>
+                        <label>Phone:</label>
+                        <input type="text" name="phone_number" value="{{ student.phone_number }}" required>
+                        <label>Address:</label>
+                        <textarea name="address" required>{{ student.address }}</textarea>
+                        <button type="submit">Update Profile</button>
+                    </form>
+                </div>
+
+                <button class="btn-toggle" onclick="toggleForm('leave-form')">Apply for Leave</button>
+                <div id="leave-form" class="form-container">
+                    <h3>Apply for Leave</h3>
+                    <form method="POST" action="{% url 'apply_leave' %}">
+                        {% csrf_token %}
+                        <label>Select Teacher:</label>
+                        <select name="teacher_id" required>
+                            <option value="" disabled selected>Choose a teacher</option>
+                            {% for teacher in all_teachers %}
+                                <option value="{{ teacher.id }}">{{ teacher.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>Start Date:</label>
+                        <input type="date" name="start_date" required>
+                        <label>End Date:</label>
+                        <input type="date" name="end_date" required>
+                        <label>Reason:</label>
+                        <textarea name="reason" required></textarea>
+                        <button type="submit">Submit Leave Request</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if leave_requests %}
+            <h3 style="text-align: center;">Your Leave History</h3>
+            <ul>
+                {% for leave in leave_requests %}
+                    <li>
+                        To: {{ leave.teacher.full_name }} |
+                        From: {{ leave.start_date }} To {{ leave.end_date }} |
+                        Status: <strong>{{ leave.status }}</strong>
+                        {% if leave.response_message %}
+                            <br><em>Message: {{ leave.response_message }}</em>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleForm(id) {
+            const form = document.getElementById(id);
+            form.style.display = form.style.display === "block" ? "none" : "block";
+        }
+
+        window.onload = function () {
+            setTimeout(function () {
+                document.getElementById("preloader").classList.add("hidden");
+                document.querySelector(".container").classList.add("visible");
+            }, 1000);
+        };
+    </script>
+
+</body>
+</html>

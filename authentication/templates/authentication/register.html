@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script>
+        function toggleUserFields() {
+            let userType = document.getElementById("user_type").value;
+            let studentFields = document.getElementById("student-fields");
+            let teacherFields = document.getElementById("teacher-fields");
+
+            studentFields.classList.add("hidden");
+            teacherFields.classList.add("hidden");
+
+            if (userType === "student") {
+                studentFields.classList.remove("hidden");
+            } else if (userType === "teacher") {
+                teacherFields.classList.remove("hidden");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Register</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                {{ user_form.username }}
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                {{ user_form.email }}
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                {{ user_form.password1 }}
+            </div>
+
+            <div class="form-group">
+                <label for="password2">Confirm Password</label>
+                {{ user_form.password2 }}
+            </div>
+
+            <div class="form-group">
+                <label for="user_type">User Type</label>
+                {{ user_form.user_type }}
+            </div>
+
+            <!-- Student Fields (Hidden by Default) -->
+            <div id="student-fields" class="hidden">
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    {{ student_form.full_name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    {{ student_form.phone_number }}
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    {{ student_form.address }}
+                </div>
+            </div>
+
+            <!-- Teacher Fields (Hidden by Default) -->
+            <div id="teacher-fields" class="hidden">
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    {{ teacher_form.full_name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    {{ teacher_form.phone_number }}
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    {{ teacher_form.address }}
+                </div>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p class="login-link">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+
+    <script>
+        document.getElementById("user_type").addEventListener("change", toggleUserFields);
+        toggleUserFields();
+    </script>
+</body>
+</html>

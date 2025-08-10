@@ -1,0 +1,144 @@
+{% extends 'base_teacher.html' %}
+
+{% block content %}
+<style>
+    /* Profile Styling */
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .go-back {
+        display: inline-block;
+        padding: 12px 20px;
+        background: #007BFF;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        text-align: center;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .go-back:hover {
+        background: #0056b3;
+    }
+
+    /* Profile Box */
+    .profile-container {
+        width: 500px;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+        text-align: left;
+        transition: 0.3s ease-in-out;
+    }
+
+    .profile-container:hover {
+        transform: translateY(-5px);
+    }
+
+    h2 {
+        text-align: center;
+        color: orange;
+        font-weight: 600;
+    }
+
+    p {
+        font-size: 16px;
+        margin: 10px 0;
+        color: #555;
+    }
+
+    /* Update Profile Button */
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+
+    .btn:hover {
+        background: #0056b3;
+        transform: scale(1.05);
+    }
+.update-section {
+    display: none;
+    width: 500px;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    max-height: 400px; /* Set max height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    transition: all 0.3s ease-in-out;
+}
+
+
+    .update-section.show {
+        display: block;
+    }
+</style>
+
+<!-- Main Content -->
+<div class="main-content">
+    <a href="{% url 'teacher_dashboard' %}" class="go-back">⬅ Go Back</a>
+
+    <!-- Teacher Profile Section -->
+    <div class="profile-container">
+        <h2>Teacher Profile</h2>
+        <p><strong>Full Name:</strong> {{ teacher.full_name }}</p>
+        <p><strong>Email:</strong> {{ teacher.user.email }}</p>
+        <p><strong>Subject:</strong> {{ teacher.subject }}</p>
+        <p><strong>Employee ID:</strong> {{ teacher.employee_id }}</p>
+        <p><strong>Phone Number:</strong> {{ teacher.phone_number }}</p>
+        <p><strong>Address:</strong> {{ teacher.address }}</p>
+        <p><strong>Date of Birth:</strong> {{ teacher.date_of_birth }}</p>
+        <p><strong>Qualifications:</strong> {{ teacher.qualifications }}</p>
+        <p><strong>Class Name:</strong> {{ teacher.class_name }}</p>
+        <p><strong>Experience:</strong> {{ teacher.experience }} years</p>
+
+        <button onclick="toggleUpdateForm()" class="btn">Update Profile</button>
+    </div>
+
+    <!-- Update Profile Section -->
+    <div class="update-section" id="updateProfile">
+        <h2>Update Profile</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Save Changes</button>
+        </form>
+    </div>
+</div>
+
+<script>
+ function toggleUpdateForm() {
+    let updateSection = document.getElementById('updateProfile');
+
+    updateSection.classList.toggle('show');
+
+    if (updateSection.classList.contains('show')) {
+        setTimeout(() => {
+            updateSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 200);
+    }
+}
+
+</script>
+
+{% endblock %}

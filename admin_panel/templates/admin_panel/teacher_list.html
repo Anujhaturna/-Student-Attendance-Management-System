@@ -1,0 +1,132 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approved Teachers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .btn {
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+            text-transform: uppercase;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        @media (max-width: 600px) {
+            table {
+                font-size: 14px;
+            }
+            .btn {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-buttons">
+
+
+            <a href="{% url 'authentication:student_list' %}" class="btn">View Approved Students</a>
+            <h2>Approved Teachers</h2>
+
+        </div>
+
+        <!-- Search Bar -->
+        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search by name, email, or subject...">
+
+        <!-- Teacher Table -->
+        <table id="teachersTable">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Subject</th>
+            </tr>
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher.full_name }}</td>
+                <td>{{ teacher.user.email }}</td>
+                <td>{{ teacher.subject }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- JavaScript for Search Functionality -->
+    <script>
+        function searchTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let table = document.getElementById("teachersTable");
+            let rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) {
+                let name = rows[i].getElementsByTagName("td")[0]?.textContent.toLowerCase();
+                let email = rows[i].getElementsByTagName("td")[1]?.textContent.toLowerCase();
+                let subject = rows[i].getElementsByTagName("td")[2]?.textContent.toLowerCase();
+
+                if (name.includes(input) || email.includes(input) || subject.includes(input)) {
+                    rows[i].style.display = "";
+                } else {
+                    rows[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>

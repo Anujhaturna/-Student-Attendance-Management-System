@@ -1,0 +1,318 @@
+
+<div class="container">
+    <a href="javascript:history.back()" class="back-button">← Go Back</a>
+
+    <h2>Attendance Report</h2>
+
+    <div class="filter-container">
+        <select id="time_filter">
+            <option value="7">Last 7 Days</option>
+            <option value="30">Last 30 Days</option>
+            <option value="90">Last 3 Months</option>
+            <option value="365">Last Year</option>
+        </select>
+
+        <select id="class_filter">
+            <option value="">Select Class</option>
+        </select>
+
+        <select id="section_filter">
+            <option value="">Select Section</option>
+        </select>
+
+        <select id="subject_filter">
+            <option value="">Select Subject</option>
+        </select>
+
+        <button id="apply_filters">Apply</button>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="barChart"></canvas>
+        <canvas id="pieChart"></canvas>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    let barChart, pieChart;
+
+    // Fetch Classes, Sections, and Subjects on Page Load
+    $(document).ready(function () {
+        fetchDropdownData("/teacher/get-classes/", "#class_filter");
+        fetchDropdownData("/teacher/get-sections/", "#section_filter");
+        fetchDropdownData("/teacher/get-subjects/", "#subject_filter");
+
+        $("#apply_filters").click(fetchAttendanceData);
+    });
+
+    function fetchDropdownData(apiUrl, dropdownId) {
+        $.ajax({
+            url: apiUrl,
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                let dropdown = $(dropdownId);
+                dropdown.empty().append(`<option value="">Select</option>`);
+
+                if (response.classes) {
+                    response.classes.forEach(item => dropdown.append(`<option value="${item.id}">${item.name}</option>`));
+                } else if (response.sections) {
+                    response.sections.forEach(item => dropdown.append(`<option value="${item.id}">${item.section_name}</option>`));
+                } else if (response.subjects) {
+                    response.subjects.forEach(item => dropdown.append(`<option value="${item.id}">${item.name}</option>`));
+                }
+            },
+            error: function () {
+                console.error(`❌ Error fetching data from ${apiUrl}`);
+            }
+        });
+    }
+
+    function fetchAttendanceData() {
+        let timeRange = $("#time_filter").val();
+        let classId = $("#class_filter").val();
+        let sectionId = $("#section_filter").val();
+        let subjectId = $("#subject_filter").val();
+
+        if (!classId || !sectionId || !subjectId) {
+            alert("Please select Class, Section, and Subject before fetching data.");
+            return;
+        }
+
+        $.ajax({
+            url: "/teacher/get-attendance-report/",
+            type: "GET",
+            data: { time_range: timeRange, class_id: classId, section_filter: sectionId, subject_id: subjectId },
+            dataType: "json",
+            success: function (data) {
+                renderCharts(data);
+            },
+            error: function () {
+                alert("Error fetching attendance data.");
+            }
+        });
+    }
+
+    function renderCharts(data) {
+        let ctxBar = document.getElementById("barChart").getContext("2d");
+        let ctxPie = document.getElementById("pieChart").getContext("2d");
+
+        let present = parseInt(data.present_count);
+        let absent = parseInt(data.absent_count);
+
+        if (barChart) barChart.destroy();
+        if (pieChart) pieChart.destroy();
+
+        barChart = new Chart(ctxBar, {
+            type: "bar",
+            data: {
+                labels: ["Present", "Absent"],
+                datasets: [{ label: "Attendance", data: [present, absent], backgroundColor: ["#2ecc71", "#e74c3c"] }]
+            }
+        });
+
+        pieChart = new Chart(ctxPie, {
+            type: "pie",
+            data: { labels: ["Present", "Absent"], datasets: [{ data: [present, absent], backgroundColor: ["#2ecc71", "#e74c3c"] }] }
+        });
+    }
+</script>
+
+<style>
+/* 📌 Animated Background */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(-45deg, #1e3c72, #2a5298, #3a7bd5, #00d2ff);
+    background-size: 400% 400%;
+    animation: bgAnimation 10s infinite ease-in-out;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 📌 Background Animation */
+@keyframes bgAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 📌 Main Container (Centered) */
+.container {
+    width: 80%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* 📌 Heading */
+h2 {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+    animation: slideInDown 1s ease-in-out;
+}
+
+/* 📌 Filter Container */
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+}
+
+/* 📌 Select Dropdowns */
+.filter-container select {
+    padding: 12px;
+    width: 150px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease-in-out;
+}
+
+.filter-container select:hover,
+.filter-container select:focus {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.05);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 📌 Apply Button */
+.apply-button {
+    padding: 12px 20px;
+    background: #ff7b54;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.apply-button:hover {
+    background: #ff5733;
+    transform: scale(1.1);
+    box-shadow: 0px 5px 15px rgba(255, 123, 84, 0.4);
+}
+
+/* 📌 Chart Container */
+.chart-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+/* 📌 Chart Styling */
+.chart-container canvas {
+    max-width: 400px;
+    max-height: 300px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 1.5s ease-in-out;
+}
+
+/* 📌 Go Back Button */
+.back-button {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-top: 15px;
+    background: #1abc9c;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.back-button:hover {
+    background: #16a085;
+    transform: scale(1.05);
+    box-shadow: 0px 4px 12px rgba(26, 188, 156, 0.4);
+}
+
+/* 📌 Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 📌 Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .filter-container select {
+        width: 100%;
+    }
+}
+
+    /* 📌 Go Back Button */
+.back-button {
+    display: inline-block;
+    padding: 12px 18px;
+    margin-bottom: 15px;
+    background: #1abc9c;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    box-shadow: 0px 4px 10px rgba(26, 188, 156, 0.3);
+}
+
+.back-button:hover {
+    background: #16a085;
+    transform: scale(1.1);
+    box-shadow: 0px 6px 15px rgba(26, 188, 156, 0.5);
+}
+
+</style>
+

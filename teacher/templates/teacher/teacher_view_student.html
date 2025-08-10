@@ -1,0 +1,118 @@
+{% extends 'base_teacher.html' %}
+
+{% block content %}
+<style>
+    /* Centering Container */
+    .profile-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+
+    /* Large Profile Card */
+    .profile-card {
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+        width: 600px;
+        max-width: 90%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    /* Animation Effect */
+    .profile-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Animated Background Glow */
+    .profile-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 206, 86, 0.3) 20%, rgba(255, 159, 64, 0) 70%);
+        z-index: 0;
+        transition: transform 0.4s ease-in-out;
+    }
+
+    .profile-card:hover::before {
+        transform: rotate(30deg);
+    }
+
+    .profile-card h3 {
+        font-size: 26px;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-weight: bold;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-card p {
+        font-size: 18px;
+        margin: 12px 0;
+        color: #444;
+        line-height: 1.6;
+        text-align: left;
+        padding: 12px;
+        border-radius: 8px;
+        background: #f9f9f9;
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-card strong {
+        color: #222;
+    }
+
+    /* Animated Button */
+    .btn {
+        display: inline-block;
+        padding: 14px 20px;
+        margin-top: 25px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 6px;
+        transition: 0.3s ease-in-out;
+        border: 2px solid #007bff;
+        position: relative;
+        z-index: 1;
+    }
+
+    .btn-view {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-view:hover {
+        background: white;
+        color: #007bff;
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-card">
+        <h3>Student Profile</h3>
+        <p><strong>Full Name:</strong> {{ student.full_name }}</p>
+        <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+        <p><strong>Class:</strong> {{ student.class_name }}</p>
+        <p><strong>Section:</strong> {{ student.section }}</p>
+        <p><strong>Date of Birth:</strong> {{ student.date_of_birth }}</p>
+        <p><strong>Phone Number:</strong> {{ student.phone_number }}</p>
+        <p><strong>Address:</strong> {{ student.address }}</p>
+
+        <a href="{% url 'teacher_student_list' %}" class="btn btn-view">Back to List</a>
+    </div>
+</div>
+
+{% endblock %}

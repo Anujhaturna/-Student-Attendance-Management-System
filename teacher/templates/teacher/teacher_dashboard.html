@@ -1,0 +1,192 @@
+{% extends 'base_teacher.html' %}
+
+{% block content %}
+<style>
+    .dashboard-container {
+        padding: 30px;
+        flex-grow: 1;
+    }
+
+    h1 {
+        color: #333;
+        font-size: 26px;
+        margin-bottom: 20px;
+    }
+
+    .notification-box {
+        background: #fff3cd;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 8px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        text-align: left;
+    }
+
+    .notification-box h3 {
+        font-size: 18px;
+        color: #856404;
+        border-bottom: 2px solid #ffcc00;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+
+    .notification-item {
+        font-size: 14px;
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .mark-read {
+        float: right;
+        color: blue;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .leave-requests {
+        background: #e3f2fd;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 8px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .leave-requests h3 {
+        font-size: 18px;
+        color: #0056b3;
+        border-bottom: 2px solid #007BFF;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+
+    .leave-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .leave-table th, .leave-table td {
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+
+    .leave-table th {
+        background-color: #007BFF;
+        color: white;
+    }
+
+    .approve-btn, .reject-btn {
+        padding: 6px 10px;
+        border: none;
+        color: white;
+        font-size: 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-right: 5px;
+    }
+
+    .approve-btn { background: green; }
+    .approve-btn:hover { background: darkgreen; }
+
+    .reject-btn { background: red; }
+    .reject-btn:hover { background: darkred; }
+</style>
+
+<div class="dashboard-container">
+    <h1>Welcome, {{ user.first_name }} {{ user.last_name }}</h1>
+
+    <!-- Notifications -->
+    <div class="notification-box">
+        <h3>Notifications</h3>
+        {% if notifications %}
+            {% for notification in notifications %}
+                <div class="notification-item">
+                    {{ notification.message }}
+                    <small style="color: gray;"> - {{ notification.created_at|date:"M d, Y H:i" }}</small>
+                    {% if not notification.is_read %}
+                        <a href="{% url 'mark_notification_read' notification.id %}" class="mark-read">Mark as Read</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #856404;">No new notifications.</p>
+        {% endif %}
+    </div>
+
+    <!-- Leave Requests -->
+    <div class="leave-requests">
+        <h3>Leave Requests</h3>
+        {% if leave_requests %}
+            <table class="leave-table">
+                <tr>
+                    <th>Student Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                {% for leave in leave_requests %}
+                <tr>
+                    <td>{{ leave.student.full_name }}</td>
+                    <td>{{ leave.start_date }}</td>
+                    <td>{{ leave.end_date }}</td>
+                    <td>{{ leave.reason }}</td>
+                    <td>
+                        {% if leave.status == "Approved" %}
+                            <span style="color: green; font-weight: bold;">Approved</span>
+                        {% elif leave.status == "Rejected" %}
+                            <span style="color: red; font-weight: bold;">Rejected</span>
+                        {% else %}
+                            <span style="color: orange; font-weight: bold;">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if leave.status == "Pending" %}
+                            <form method="POST" action="{% url 'approve_leave' leave.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="approve-btn">Approve</button>
+                            </form>
+                            <form method="POST" action="{% url 'reject_leave' leave.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="reject-btn">Reject</button>
+                            </form>
+                        {% else %}
+                            <em>N/A</em>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No pending leave requests.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Flash messages as alerts -->
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            alert("{{ message|escapejs }}");
+        {% endfor %}
+    {% endif %}
+
+    // Confirm dialogs
+    document.querySelectorAll(".approve-btn").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+            if (!confirm("Are you sure you want to approve this leave request?")) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    document.querySelectorAll(".reject-btn").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+            if (!confirm("Are you sure you want to reject this leave request?")) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}

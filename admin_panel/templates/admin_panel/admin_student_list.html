@@ -1,0 +1,203 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Student List</h2>
+    <table class="student-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>Roll Number</th>
+                <th>Class</th>
+                <th>Section</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ student.full_name }}</td>
+                <td>{{ student.roll_number }}</td>
+                <td>{{ student.class_name }}</td>
+                <td>{{ student.section }}</td>
+                <td>
+                    <a href="{% url 'authentication:admin_view_student' student.id %}" class="btn btn-view">View</a>
+                    <a href="{% url 'authentication:admin_edit_student' student.id %}" class="btn btn-edit">Edit</a>
+                    <button class="btn btn-remark" onclick="openRemarkForm({{ student.id }})">Add Remark</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center;">No students found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Remark Modal -->
+    <div id="remarkModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRemarkForm()">&times;</span>
+            <h3>Add Remark</h3>
+            <form id="remarkForm" method="POST" action="">
+                {% csrf_token %}
+                <input type="hidden" name="student_id" id="studentId">
+                <label for="remark">Remark:</label>
+                <textarea name="remark" id="remark" required></textarea>
+                <button type="submit" class="btn btn-submit">Submit</button>
+                <button type="button" class="btn btn-cancel" onclick="closeRemarkForm()">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 1000px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .student-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .student-table th, .student-table td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    .student-table th {
+        background-color: #004494;
+        color: white;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-view {
+        background: #28a745;
+    }
+
+    .btn-edit {
+        background: #ffc107;
+        color: black;
+    }
+
+    .btn-remark {
+        background: #007bff;
+    }
+
+    .btn:hover {
+        opacity: 0.85;
+        transform: scale(1.05);
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 40%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 22px;
+        cursor: pointer;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+
+    .btn-submit {
+        background: #28a745;
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .btn-cancel {
+        background: #dc3545;
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+    }
+</style>
+
+<script>
+    function openRemarkForm(studentId) {
+        // Ensure modal is hidden before opening (prevents issues on refresh)
+        document.getElementById("remarkModal").style.display = "none";
+
+        // Set form action dynamically
+        document.getElementById("remarkForm").action = `/admin/students/${studentId}/add-remark/`;
+        document.getElementById("studentId").value = studentId;
+
+        // Open modal only when button is clicked
+        setTimeout(() => {
+            document.getElementById("remarkModal").style.display = "flex";
+        }, 100);
+    }
+
+    function closeRemarkForm() {
+        document.getElementById("remarkModal").style.display = "none";
+    }
+
+    // Ensure modal is hidden on page load
+    window.onload = function () {
+        document.getElementById("remarkModal").style.display = "none";
+    };
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Panel</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: #FFA500; /* Orange background */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            width: 100%;
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: black;
+        }
+
+        .sidebar a {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+            background: transparent;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar a:hover {
+            background: #cc8400; /* Darker shade on hover */
+            color: white;
+        }
+
+        .active {
+            background: #a6751e; /* Highlighted active link */
+            color: white;
+        }
+
+        /* Content Area */
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+/* Preloader Style */
+#preloader {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+}
+
+/* Dots Animation */
+.dots-container {
+    display: flex;
+    justify-content: space-between;
+    width: 60px;
+}
+
+.dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #4361ee;
+    opacity: 0;
+    animation: blink 1.5s infinite ease-in-out;
+}
+
+.dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+/* Animation to make dots blink */
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Main Content - to adjust once preloader is removed */
+.container {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#preloader.hidden {
+    display: none;
+}
+
+.container.visible {
+    opacity: 1;
+}
+
+    </style>
+</head>
+<body>
+ <!-- Preloader -->
+    <div id="preloader">
+        <div class="dots-container">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Student Panel</h2>
+        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+
+
+        <a href="{% url 'attendance_chart' %}">View Attendance Chart</a>
+        <a href="{% url 'view_attendance' %}">View Attendance List</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+<script>
+    window.onload = function() {
+    setTimeout(function(){
+        // Hide preloader after 2 seconds
+        document.getElementById("preloader").classList.add("hidden");
+        // Show the main content
+        document.querySelector(".container").classList.add("visible");
+    }, 1000); // Preloader will be visible for 3 seconds
+};
+
+</script>
+</body>
+</html>
